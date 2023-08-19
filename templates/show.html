@@ -1,0 +1,350 @@
+{{template "head"}}
+{{template "header"}}
+
+
+
+     
+		<main>
+		<section class="content">
+				<video id="mainVid" autoplay width="320" height="480" preload="metadata" loop poster="#" class="hvideo">
+					<source src="/files/{{.URL}}.mp4#t=0.01" type="video/mp4">
+					<source src="/files/{{.URL}}.webm#t=0.01" type="video/webm">
+					<source src="/giant/{{.URL}}.webm#t=0.01" type="video/webm">
+					Your browser does not support the video tag.
+				</video>
+				<div onclick='playMe()' class="overly"></div>
+			</section>
+		<section class="content">
+			<div class="player-controls">
+                <div class="play-duration">
+                    <div class="play-duration-bar"></div>
+                </div>
+				<div class="buttonbar">
+                <button onclick='slower()' id="slower" class="sqrBtn btn">&#10134;</button>
+                <button onclick='resetSpeed()' id="normal" class="sqrBtn btn">&#9868;</button>
+                <button  onclick='faster()' id="faster" class="sqrBtn btn" >&#10133;</button>
+                <button  id="mute" class="sqrBtn btn" >&#128263;</button>
+                <button class="saveBtn  btn" id="share" title="Share button" value="/v/{{.URL}}" onclick="navigator.clipboard.writeText(window.location.href);mySnack('copied URL to share');">Share</button>
+				</div>
+            </div>
+			</section>
+                <!--button class="btn play-video">
+                    <svg height="100%" version="1.1" viewBox="0 0 36 36" width="100%" style="pointer-events: none">>
+                        <path fill="white" d="M 12,26 18.5,22 18.5,14 12,10 z M 18.5,22 25,18 25,18 18.5,14 z" ></path>
+                    </svg>
+                </button>
+                <button id="pause-video" class="btn btn">
+                    <svg height="100%" version="1.1" viewBox="0 0 36 36" width="100%" style="pointer-events: none">>
+                        <path fill="white" d="M 12,26 16,26 16,10 12,10 z M 21,26 25,26 25,10 21,10 z"></path>
+                    </svg>
+                </button-->
+		<!--button class="sqrBtn" id="report" title="Report" >&#9872;</button>
+		<form id="panda" method="post">
+			<input class="saveBtn" type="button" onclick='AddToColl("saved",{{.}})' value="Save"/>
+		</form-->
+		
+	<br />
+	<div class="block-3">
+   <div class="gif-info">
+      <h1 class="title">{{.Title}}</h1>
+      <!--div class="gif-views">{{.Views}} views</div-->
+      <span class="divider">|</span>
+      <div class="gif-created">Created {{.Date}}</div>
+      <div class="tags-list-wrapper">
+         <div class="tag-list">{{range .Tags}}<a class="filled-button tag-button small" href="/tag/{{.}}">{{.}}</a>{{end}}</div>
+      </div>
+   </div>
+   <div class="user-info">
+      <div class="user-row">
+         <a class="profile-info-overview" href="/@ellygator">
+            <div class="profile-image small">
+               <div class="image" style="background-image: url(&quot;/userpic/userpic.png&quot;);"></div>
+            </div>
+            <div class="profile-name has-name">
+               <div class="name-wrapper"><span class="name">{{.Author}}</span></div>
+               <span class="userid">@{{.Author}}</span>
+            </div>
+         </a>
+      </div>
+      <!--div class="profile-stat"><span class="datum views"><span class="value">623.8K</span>&nbsp;total GIF views</span><span class="followers"><span class="datum"><span class="value">31</span>&nbsp;followers</span></span><span class="following"><span class="datum"><span class="value">23</span>&nbsp;following</span></span></div-->
+   </div>
+</div>
+<div id="snackbar"></div>
+		</main>
+<script>
+var QS = function (el) {
+    return document.querySelector(el);
+};
+
+var durationBar = QS('.play-duration-bar');
+
+QS('#mainVid').addEventListener('timeupdate', function (e) {
+
+    var total = ((e.target.currentTime / e.target.duration) * 100);
+
+    durationBar.style.width = total + '%';
+})
+
+QS('.play-duration').addEventListener('mousedown', function (e) {
+
+    var rect = e.currentTarget.getBoundingClientRect(),
+        offsetX = e.clientX - rect.left,
+        offsetY = e.clientY - rect.top;
+
+    var fraction = (offsetX / e.currentTarget.clientWidth);
+
+    var video = QS('#mainVid');
+
+    video.currentTime = video.duration *  fraction;
+
+    //durationBar.style.width = (fraction * 100) + '%';
+});
+</script>
+</body>
+<style>
+.player{
+   padding: 0;
+   margin: 0;
+   display: flex;
+   flex-direction: column;
+   width: 100%;
+   height: 100%;
+}
+
+.player video{
+}
+
+.player .video-wrapper {
+    position: relative;
+    height: 100%;
+    background-color: #00b630;
+}
+
+.player .video-wrapper .video-overlay{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, .6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.player .player-controls{
+    position: fixed;
+    bottom: 0;
+    text-align: center;
+    opacity: .1;
+    width: 100%;
+    left: 0;
+    padding: 0;
+    transition: all .2s linear;
+}
+
+ .player:hover .player-controls {
+     opacity: 1;
+     background-color: rgba(0, 0, 0, .9);
+ }
+
+.play-duration {
+    height: 10px;
+    width: 100%;
+    position: relative;
+    margin: 0 0 15px 0;
+    cursor: pointer;
+    background: black;
+}
+
+ .play-duration .play-duration-bar{
+    background-color: #00b630;
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 0;
+ }
+
+.btn{
+    background-color: #00b630;
+    border: none;
+    padding: 5px;
+    color: white;
+    font-size: 15px;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.btn.btn-lg{
+    width: 80px;
+    height: 80px;
+    font-size: 25px;
+}
+
+.btn:active{
+    transform: translateY(2px);
+}
+</style>
+	<script>
+	function showLogout() {
+		lg = document.getElementById("logout");
+		lg.style.display = "block";
+	}
+	</script>
+				
+		<!--&#10008;-->
+		<!--&#10004;-->
+     <!--script>
+		window.addEventListener('contextmenu', (event) => {event.preventDefault();alert('mouse right-click is prevented');});
+     </script-->
+     <script>
+		var angle = 0;
+		var flip = false;
+		var blend = false;
+		var  hotkeysEnabled = true;
+	 window.addEventListener("keypress", function(e) {
+		vidd = document.getElementsByTagName("video")[0];
+		if(e.key==="c" && vidd.playbackRate < 3.0 && hotkeysEnabled) {
+			vidd.playbackRate += .25; 
+			document.getElementById("curSpeed").textContent = parseFloat(vidd.playbackRate).toFixed(2);
+		};
+		if(e.key==="x" && hotkeysEnabled) {
+			vidd.playbackRate = 1;
+			document.getElementById("curSpeed").textContent = parseFloat(vidd.playbackRate).toFixed(2);
+		};
+		if(e.key==="z" && vidd.playbackRate > 0.25 && hotkeysEnabled) {
+			try{vidd.playbackRate -= .25;} catch(err){vidd.playbackRate = 0.25}
+			document.getElementById("curSpeed").textContent = parseFloat(vidd.playbackRate).toFixed(2);
+		};
+		if(e.key==="m" && vidd.playbackRate > 0.25 && hotkeysEnabled) {
+			mute();
+		};
+		if(e.key==="r" && hotkeysEnabled) {
+			if (angle != 360) {
+				angle = angle+90; 
+				vid = document.getElementsByTagName("video")[0];
+				vdsclX =  vid.videoHeight/vid.videoWidth;
+				vdsclY = vid.videoWidth/vid.videoHeight;
+				vdscale =  Math.min(vdsclX, vdsclY);
+				if (vid.videoHeight > vid.videoWidth) {vdscale =  Math.max(vdsclX, vdsclY)};
+				vid.style.transform = "rotate("+ angle +"deg) scale("+ vdscale +")";
+			} 
+			if (angle == 360) {
+				angle = 0;
+				document.getElementsByTagName("video")[0].style.transform = "rotate(0deg) scale(1)";
+			}
+			if (angle == 180) {
+				angle = 180;
+				document.getElementsByTagName("video")[0].style.transform = "rotate(180deg) scale(1)";
+			}
+		};
+		if(e.key==="h" && hotkeysEnabled) {
+			if (!flip) { 
+				document.getElementsByTagName("video")[0].style.transform = "scaleX(-1)";
+				flip = true; 
+			} else { 
+				document.getElementsByTagName("video")[0].style.transform = "scaleX(1)";
+				flip = false; 
+			}
+		};}, false);
+
+     </script>
+	 
+     <script>/*
+document
+  .getElementById("to_focus")
+  .addEventListener("keydown", function(event) {
+    if (event.ctrlKey && event.key === "z") {
+      // Do Something, may be an 'Undo' operation
+    }
+});
+*/
+var video = document.getElementById('mainVid');
+
+document.onkeypress = function(e) {
+    if ( (e || window.event).keyCode === 32 /* enter key */ ) {
+        video.paused ? video.play() : video.pause();
+    }
+};
+
+     </script>
+	 
+     <script>
+	 var video = document.getElementById("mainVid");
+		video.muted = true;
+		function playMe() {
+                   if (video.paused) {   // play the file, and display pause symbol 
+                       video.play(); 
+                   } else {              // pause the file, and display play symbol   
+			video.pause(); 
+                   } 
+}
+function slower() {
+	video.playbackRate -= .15; 
+}
+function faster() {
+	video.playbackRate += .15; 
+}
+function resetSpeed() {
+	video.playbackRate = 1; 
+}
+function mute() {
+	if (video.muted) { 
+		video.muted = false; 
+	} else { 
+		video.muted = true; 
+	} 
+}
+
+          document.getElementById("mute").addEventListener("click", function (evt) {
+            if (video.muted) {
+              video.muted = false;
+            } else {
+              video.muted = true;
+            }
+          }, false);
+          video.addEventListener("volumechange", function () {
+            if (video.muted) {
+              document.getElementById("mute").innerHTML = "&#128263;";
+            } else {
+              document.getElementById("mute").innerHTML = "&#128266;";
+            }
+          }, false);
+          video.addEventListener("error", function (err) {
+            console.log(err);
+          }, true);
+          video.addEventListener("loadedmetadata", function () {
+          }, false);
+
+</script>
+<script>
+function disableHotkeys(){hotkeysEnabled=false}
+function enableHotkeys(){hotkeysEnabled=true}
+
+function AddToColl(collName, gifname) {
+const a2c = new XMLHttpRequest();
+a2c.open("POST", "/addtocoll", true);
+a2c.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+a2c.onreadystatechange = () => {
+  if (a2c.readyState === XMLHttpRequest.DONE && a2c.status === 200) {
+	alert("done")
+  }
+};
+a2c.send("collection="+ collName +"&gifname="+ gifname);
+}
+</script>
+
+<script>
+function mySnack(msg) {
+  var x = document.getElementById("snackbar");
+  x.className = "show";
+  x.innerText = msg;
+  setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+}
+</script>
